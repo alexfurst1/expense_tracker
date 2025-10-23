@@ -7,19 +7,12 @@ class ExpenseTracker:
     def __init__(self,expenses: list):
         self.expenses = Expense.expenses
 
-    def add_expense(self):
+    def add_expense(self,amount,description: str):
         expense = Expense()
-        complete = False
-        while not complete:
-            try:
-                expense.amount = int(input("Enter expense amount: "))
-                expense.description = input("Enter a description for this expense: ")
-            except ValueError, TypeError:
-                print("You may have entered something with the wrong format. Please try again")
-                continue
-            complete = True
-            expense.id = len(self.expenses)
-            self.expenses.append(self.expense)
+        expense.amount = amount
+        expense.description = description
+        expense.id = len(self.expenses)
+        self.expenses.append(self.expense)
             
 
     def edit_expense(self,expense_id: int):
