@@ -7,7 +7,7 @@ class ExpenseTracker:
     def __init__(self,expenses: list):
         self.expenses = Expense.expenses
 
-    def add_expense(self,amount,description: str):
+    def add_expense(self,amount: float, description:str=None):
         expense = Expense()
         expense.amount = amount
         expense.description = description
@@ -15,18 +15,13 @@ class ExpenseTracker:
         self.expenses.append(self.expense)
             
 
-    def edit_expense(self,expense_id: int):
-        complete = False
-        while not complete:
-            try:
-                self.expenses[expense_id].amount = int(input("Enter new amount: "))
-                temp_desc = input("Edit description (Press enter to skip): ")
-                if temp_desc != "":
-                    self.expenses[expense_id].description = temp_desc
-            except ValueError, TypeError:
-                print("You may have entered something with the wrong format. Please try again")
-                continue
-            complete = True
+    def edit_expense(self,expense_id: int, new_amount: float, new_desc:str=None):
+        try:
+            self.expenses[expense_id].amount = new_amount
+            if new_desc:
+                self.expenses[expense_id].description = new_desc
+        except ValueError, TypeError:
+            print("Invalid ID, amount, or description.")
     
     def delete_expense(self, expense_id: int):
         if expense_id < 0 or expense_id >= len(self.expenses):
