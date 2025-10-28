@@ -1,4 +1,4 @@
-from expense import Expense
+from .expense import Expense
 from datetime import date
 
 class ExpenseTracker:

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "expense-tracker"
+version = "0.1.0"
+description = "A simple CLI expense tracker"
+authors = [
+    { name = "Alex Furst" }
+]
+readme = "README.md"
+requires-python = ">=3.10"
+
+[project.scripts]
+expense-tracker = "expense_tracker.cli:main"
