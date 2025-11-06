@@ -13,7 +13,7 @@ def main():
 
     add_parser.set_defaults(func=lambda args: tracker.add_expense(
         amount = args.amount,
-        description = args.desc # i guess the -- is just ignored here
+        desc = args.desc # i guess the -- is just ignored here
         ))
 
     edit_parser = subparsers.add_parser("edit",help="modify an existing expense")

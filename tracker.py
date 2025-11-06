@@ -6,23 +6,24 @@ import os
 class ExpenseTracker:
     """Expense tracker that can save/load from JSON file."""
     
-    DEFAULT_SAVE_PATH = "expenses.json"
-    
-    try:
-        with open(DEFAULT_SAVE_PATH,"r") as f:
-            data = json.load(f)
-    except FileNotFoundError:
-        print("File does not exist")
-        data = []
-    except json.JSONDecodeError:
-        print("File exists but is empty or corrupted")
-        data = []
+    def __init__(self):
+        self.DEFAULT_SAVE_PATH = "expenses.json"
+        try:
+            with open(self.DEFAULT_SAVE_PATH,"r") as f:
+                self.data = json.load(f)
+        except FileNotFoundError:
+            print("File does not exist")
+            self.data = []
+        except json.JSONDecodeError:
+            print("File exists but is empty or corrupted")
+            self.data = []
     
 
 
     def add_expense(self, amount: float, desc: str | None = None) -> None:
         new = {"amount":amount,"desc":desc,"id":None}
         new["id"] = len(self.data)
+        new["date"] = str(date.today()) 
         self.data.append(new)
         
         try:
@@ -56,11 +57,13 @@ class ExpenseTracker:
         try:
             with open(self.DEFAULT_SAVE_PATH,"r") as f:
                 self.data = json.load(f)
-            data = [item for item in data if item["id"] != expense_id]
+            self.data = [item for item in self.data if item["id"] != expense_id]
             with open(self.DEFAULT_SAVE_PATH,"w") as f:
-                json.dump(data,f,indent=4)
-        except FileNotFoundError, json.JSONDecodeError:
-            print("error")
+                json.dump(self.data,f,indent=4)
+        except FileNotFoundError:
+            print("File does not exist")
+        except json.JSONDecodeError:
+            print("File exists but is empty or corrupted")
 
     
     
@@ -70,63 +73,41 @@ class ExpenseTracker:
                 self.data = json.load(f)
                 print(f"ID  Date    Description    Amount")
                 for dict in self.data:
-                    print(f"{dict["id"]}  {dict["date"]}    {dict["desc"]}     {dict["amount"]}")
-        except FileNotFoundError, json.JSONDecodeError:
-            print("error whoops!")
+                    print(f'{dict["id"]}  {dict["date"]}    {dict["desc"]}     {dict["amount"]}')
+        except FileNotFoundError:
+            print("File does not exist")
+        except json.JSONDecodeError:
+            print("File exists but is empty or corrupted")
 
-    def summary(self, month_int: int | None = None) -> None:
+    def summary(self, month: int | None = None) -> None:
         current_year = date.today().year
         total = 0.0
 
-        if not month_int:
-            for exp in self.expenses:
-                total += exp.amount
+        try:
+            with open(self.DEFAULT_SAVE_PATH,"r") as f:
+                self.data = json.load(f)
+        except FileNotFoundError, json.JSONDecodeError:
+            print("error")
+
+        if not month:
+            for exp in self.data:
+                total += exp["amount"]
             print(f"Total expenses: ${total}")
             return
 
         try:
-            month_name = date(1900, month_int, 1).strftime('%B')
+            month_name = date(1900, month, 1).strftime('%B')
         except Exception:
             print("Invalid month number")
             return
 
-        for exp in self.expenses:
-            if exp.date.month == month_int and exp.date.year == current_year:
-                total += exp.amount
+        for exp in self.data:
+            date_ = exp["date"]
+            month_ = int(date_[5:7])
+            year = int(date_[:4])
+            if month_ == month and year == current_year:
+                total += exp["amount"]
 
         print(f"Total expenses for {month_name}: ${total}")
 
-    def save(self, filepath: str = DEFAULT_SAVE_PATH) -> None:
-        """Save expenses to a JSON file."""
-        expenses_data = []
-        for exp in self.expenses:
-            expenses_data.append({
-                'amount': exp.amount,
-                'description': exp.description,
-                'date': exp.date.isoformat(),
-                'id': exp.id
-            })
-        
-        with open(filepath, 'w') as f:
-            json.dump(expenses_data, f, indent=2)
-        print(f"Saved {len(self.expenses)} expenses to {filepath}")
-
-    def load(self, filepath: str = DEFAULT_SAVE_PATH) -> None:
-        """Load expenses from a JSON file."""
-        if not os.path.exists(filepath):
-            print(f"No saved expenses found at {filepath}")
-            return
-
-        try:
-            with open(filepath, 'r') as f:
-                expenses_data = json.load(f)
-
-            self.expenses = []
-            for data in expenses_data:
-                exp = Expense(data['amount'], data['description'])
-                exp.date = date.fromisoformat(data['date'])
-                exp.id = data['id']
-                self.expenses.append(exp)
-            print(f"Loaded {len(self.expenses)} expenses from {filepath}")
-        except Exception as e:
-            print(f"Error loading expenses: {e}")
+    
