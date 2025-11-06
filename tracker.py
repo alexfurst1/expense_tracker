@@ -65,9 +65,14 @@ class ExpenseTracker:
     
     
     def list_expenses(self) -> None:
-        print(f"ID  Date    Description    Amount")
-        for exp in self.expenses:
-            print(f"{exp.id}  {exp.date}    {exp.description}     {exp.amount}")
+        try:
+            with open(self.DEFAULT_SAVE_PATH,"r") as f:
+                self.data = json.load(f)
+                print(f"ID  Date    Description    Amount")
+                for dict in self.data:
+                    print(f"{dict["id"]}  {dict["date"]}    {dict["desc"]}     {dict["amount"]}")
+        except FileNotFoundError, json.JSONDecodeError:
+            print("error whoops!")
 
     def summary(self, month_int: int | None = None) -> None:
         current_year = date.today().year

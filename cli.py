@@ -1,5 +1,5 @@
 import argparse
-from expense_tracker.tracker import ExpenseTracker
+from tracker import ExpenseTracker
 
 def main():
     parser = argparse.ArgumentParser(description="CLI Expense Tracker")
